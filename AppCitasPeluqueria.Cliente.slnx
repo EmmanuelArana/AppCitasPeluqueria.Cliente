@@ -1,0 +1,25 @@
+<Solution>
+  <Folder Name="/01. DataAccess Layer/">
+    <Project Path="DataAccess.CitasPeluqueria/DataAccess.CitasPeluqueria.csproj" />
+    <Project Path="Entities.CitasPeluqueria/Entities.CitasPeluqueria.csproj" />
+    <Project Path="Repository.CitasPeluqueria/Repository.CitasPeluqueria.csproj" />
+  </Folder>
+  <Folder Name="/02. Business Layer/">
+    <Project Path="Business.CitasPeluqueria/Business.CitasPeluqueria.csproj" />
+  </Folder>
+  <Folder Name="/03. Transversal Layer/">
+    <Project Path="DTO.CitasPeluqueria/DTO.CitasPeluqueria.csproj" />
+  </Folder>
+  <Folder Name="/04. Server Layer/">
+    <Project Path="API.CitasPeluqueria/API.CitasPeluqueria.csproj" />
+  </Folder>
+  <Folder Name="/05. Client Layer/">
+    <Project Path="AppCitasPeluqueria.Cliente/MVC.CitasPeluqueria.csproj" />
+  </Folder>
+  <Folder Name="/06. Utilities Layer/">
+    <Project Path="Utilities.CitasPeluqueria/Utilities.CitasPeluqueria.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="README.md" />
+  </Folder>
+</Solution>
