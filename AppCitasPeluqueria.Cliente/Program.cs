@@ -1,7 +1,15 @@
+using Microsoft.EntityFrameworkCore;
+using DataAccess.CitasPeluqueria.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Configure DbContext from configuration
+var connectionString = builder.Configuration.GetConnectionString("CitasPeluqueriaDB");
+builder.Services.AddDbContext<CitasPeluqueriaContext>(options =>
+    options.UseSqlServer(connectionString));
 
 var app = builder.Build();
 

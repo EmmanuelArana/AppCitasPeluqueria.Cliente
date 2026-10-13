@@ -19,4 +19,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Business.CitasPeluqueria\Business.CitasPeluqueria.csproj" />
+  </ItemGroup>
+
 </Project>
