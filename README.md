@@ -7,6 +7,7 @@ Ax7!pQ9d
 ## Daniel Password:
 
 ## Chino Password:
+Alezz0620
 
 ## Yannike Password:
 
