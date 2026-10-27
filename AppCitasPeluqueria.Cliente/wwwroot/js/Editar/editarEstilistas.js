@@ -38,9 +38,10 @@ $(document).ready(function () {
 // Llena el select y luego ejecuta el callback
 function cargarEspecialidades(callback) {
     $.get(urlEspecialidades, function (res) {
-        const opciones = res.map(e => `<option value="${e.especialidadId}">${e.nombre}</option>`);
+        const activas = (res || []).filter(e => e.activo === true);
+        const opciones = activas.map(e => `<option value="${e.especialidadId}">${e.nombre}</option>`);
         $("#selEspecialidad").html(opciones.join(""));
-        callback();
+        if (callback) callback();
     });
 }
 

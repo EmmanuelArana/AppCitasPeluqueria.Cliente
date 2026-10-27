@@ -32,12 +32,7 @@ $(document).ready(function () {
     `);
 
     // Primero se llenan los select del fomulario
-    $.when($.get(urlClientes), $.get(urlEstilistas)).done(function (resClientes, resEstilistas) {
-        $("#selCliente").html(resClientes[0].map(c => `<option value="${c.clienteId}">${c.nombre}</option>`).join(""));
-        $("#selEstilista").html(resEstilistas[0].map(e => `<option value="${e.estilistaId}">${e.nombre}</option>`).join(""));
-
-        getCitaById(citaId);
-    });
+    getCitaById(citaId);
 
     $("#formCita").on("submit", function (e) {
         e.preventDefault();
@@ -75,8 +70,8 @@ function getCitaById(id) {
         success: function (res) {
             fechaCreacion = res.fechaCreacion;
 
-            $("#selCliente").val(res.clienteId);
-            $("#selEstilista").val(res.estilistaId);
+            cargarSelects(res);
+
             $("#selEstado").val(res.estado);
             $("#txtNotas").val(res.notas);
             pickerFecha.setDate(res.fechaCita);
@@ -85,5 +80,35 @@ function getCitaById(id) {
         error: function (error) {
             console.error("Error al obtener la cita:", error);
         }
+    });
+}
+
+function cargarSelects(cita) {
+    $.when($.get(urlClientes), $.get(urlEstilistas)).done(function (resClientes, resEstilistas) {
+        const clientes = resClientes[0];
+        const estilistas = resEstilistas[0];
+
+        // Activos, más el que ya tiene asignada la cita (aunque esté inactivo)
+        const clientesVisibles = clientes.filter(c =>
+            c.activo === true || c.clienteId === cita.clienteId
+        );
+        const estilistasVisibles = estilistas.filter(e =>
+            e.activo === true || e.estilistaId === cita.estilistaId
+        );
+
+        $("#selCliente").html(
+            clientesVisibles.map(c =>
+                `<option value="${c.clienteId}">${c.nombre}${c.activo ? '' : ' (inactivo)'}</option>`
+            ).join("")
+        );
+        $("#selEstilista").html(
+            estilistasVisibles.map(e =>
+                `<option value="${e.estilistaId}">${e.nombre}${e.activo ? '' : ' (inactivo)'}</option>`
+            ).join("")
+        );
+
+        // Ahora sí existen las opciones, se marca la seleccionada
+        $("#selCliente").val(cita.clienteId);
+        $("#selEstilista").val(cita.estilistaId);
     });
 }

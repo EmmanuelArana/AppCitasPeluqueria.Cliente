@@ -107,23 +107,27 @@ function getCitas() {
             const clientes = resClientes[0];
             const estilistas = resEstilistas[0];
 
-            // Diccionarios para mapear los nombres de clientes y estilistas por sus IDs
+            // Diccionarios con TODOS (para mostrar nombres en la tabla de citas)
             nombreCliente = {};
             clientes.forEach(c => nombreCliente[c.clienteId] = c.nombre);
 
             nombreEstilista = {};
             estilistas.forEach(e => nombreEstilista[e.estilistaId] = e.nombre);
 
+            // Solo los activos para los selects
+            const clientesActivos = clientes.filter(c => c.activo === true);
+            const estilistasActivos = estilistas.filter(e => e.activo === true);
+
             $("#selCliente").html(
                 `<option value="" selected disabled>Selecciona un cliente</option>` +
-                clientes.map(c => `<option value="${c.clienteId}">${c.nombre}</option>`).join("")
+                clientesActivos.map(c => `<option value="${c.clienteId}">${c.nombre}</option>`).join("")
             );
             $("#selEstilista").html(
                 `<option value="" selected disabled>Selecciona un estilista</option>` +
-                estilistas.map(e => `<option value="${e.estilistaId}">${e.nombre}</option>`).join("")
+                estilistasActivos.map(e => `<option value="${e.estilistaId}">${e.nombre}</option>`).join("")
             );
 
-            aplicarFiltro(); 
+            aplicarFiltro();
         })
         .fail(function (error) {
             console.error("Error al cargar los datos:", error);

@@ -40,11 +40,13 @@ function cargarEspecialidadesSelect() {
     $.get(urlEspecialidades)
         .done(function (especialidades) {
             let opciones = '<option value="">Seleccione una especialidad...</option>';
-            if (especialidades && especialidades.length > 0) {
-                especialidades.forEach(e => {
-                    opciones += `<option value="${e.especialidadId}">${e.nombre}</option>`;
-                });
-            }
+
+            const activas = (especialidades || []).filter(e => e.activo === true);
+
+            activas.forEach(e => {
+                opciones += `<option value="${e.especialidadId}">${e.nombre}</option>`;
+            });
+
             $("#selectEspecialidad").html(opciones);
         })
         .fail(function (error) {
