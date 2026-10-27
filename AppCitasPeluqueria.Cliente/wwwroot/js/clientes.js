@@ -6,37 +6,59 @@ $(document).ready(function () {
 
     $("#formCliente").on("submit", function (e) {
         e.preventDefault();
+        limpiarErrores($(this));
 
-        const cliente = {
-            nombre: $("#inpNombre").val(),
-            telefono: $("#inpTelefono").val(),
-            email: $("#inpEmail").val(),
-            activo: $("#chkActivo").is(":checked")
-        };
+        const nombre = $("#inpNombre").val().trim();
+        const telefono = $("#inpTelefono").val().trim();
+        const email = $("#inpEmail").val().trim();
+        let valido = true;
 
-        $.ajax({
-            url: urlCompleta,
-            method: "POST",
-            contentType: "application/json",
-            data: JSON.stringify(cliente),
-            success: function () {
-                // 1. Limpiar formulario
-                $("#formCliente")[0].reset();
+        if (!nombre) { marcarError($("#inpNombre"), "El nombre es obligatorio."); valido = false; }
+        if (!telefono) { marcarError($("#inpTelefono"), "El teléfono es obligatorio."); valido = false; }
+        if (!email) {
+            marcarError($("#inpEmail"), "El email es obligatorio.");
+            valido = false;
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            marcarError($("#inpEmail"), "El email no tiene un formato válido.");
+            valido = false;
+        }
+        if (!valido) return;
 
-                // 2. Cerrar el Offcanvas de Bootstrap de forma segura
-                const offcanvasEl = document.getElementById("offcanvasCliente");
-                const offcanvasInstance = bootstrap.Offcanvas.getInstance(offcanvasEl);
-                if (offcanvasInstance) {
-                    offcanvasInstance.hide();
-                }
+        $.get(urlCompleta).done(function (lista) {
+            let hayDuplicado = false;
 
-                // 3. Recargar la tabla usando el nombre correcto
-                getClientes();
-            },
-            error: function (error) {
-                console.error("Error al crear:", error);
-                alert("Ocurrió un error al guardar el cliente.");
+            if (buscarDuplicado(lista, { email }, ["email"], "clienteId", null)) {
+                marcarError($("#inpEmail"), "Ya existe un cliente con ese email.");
+                hayDuplicado = true;
             }
+            if (buscarDuplicado(lista, { telefono }, ["telefono"], "clienteId", null)) {
+                marcarError($("#inpTelefono"), "Ya existe un cliente con ese teléfono.");
+                hayDuplicado = true;
+            }
+            if (hayDuplicado) return;
+
+            const cliente = {
+                nombre: nombre,
+                telefono: telefono,
+                email: email,
+                activo: $("#chkActivo").is(":checked")
+            };
+
+            $.ajax({
+                url: urlCompleta,
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(cliente),
+                success: function () {
+                    $("#formCliente")[0].reset();
+                    bootstrap.Offcanvas.getOrCreateInstance($("#offcanvasCliente")[0]).hide();
+                    getClientes();
+                },
+                error: function (error) {
+                    console.error("Error al crear:", error);
+                    alert("Ocurrió un error al guardar el cliente.");
+                }
+            });
         });
     });
 });

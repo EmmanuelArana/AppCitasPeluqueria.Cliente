@@ -7,24 +7,42 @@ $(document).ready(function () {
 
     $("#formEspecialidad").on("submit", function (e) {
         e.preventDefault();
+        const $form = $(this);
+        limpiarErrores($form);
 
-        const especialidad = {
-            especialidadId: especialidadId,
-            nombre: $("#inpNombre").val(),
-            activo: $("#chkActivo").is(":checked")
-        };
+        const nombre = $("#inpNombre").val().trim();
 
-        $.ajax({
-            url: `${urlCompleta}/${especialidadId}`,
-            method: "PUT",
-            contentType: "application/json",
-            data: JSON.stringify(especialidad),
-            success: function () {
-                window.location.href = '/Especialidades';
-            },
-            error: function (error) {
-                console.error("Error al actualizar:", error);
+        if (!nombre) {
+            marcarError($("#inpNombre"), "El nombre es obligatorio.");
+            mostrarErrores($form);
+            return;
+        }
+
+        $.get(urlCompleta).done(function (lista) {
+            if (buscarDuplicado(lista, { nombre }, ["nombre"], "especialidadId", especialidadId)) {
+                marcarError($("#inpNombre"), "Ya existe otra especialidad con ese nombre.");
+                mostrarErrores($form);
+                return;
             }
+
+            const especialidad = {
+                especialidadId: especialidadId,
+                nombre: nombre,
+                activo: $("#chkActivo").is(":checked")
+            };
+
+            $.ajax({
+                url: `${urlCompleta}/${especialidadId}`,
+                method: "PUT",
+                contentType: "application/json",
+                data: JSON.stringify(especialidad),
+                success: function () {
+                    window.location.href = '/Especialidades';
+                },
+                error: function (error) {
+                    console.error("Error al actualizar:", error);
+                }
+            });
         });
     });
 });

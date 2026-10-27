@@ -8,29 +8,54 @@ $(document).ready(function () {
 
     $("#formEstilista").on("submit", function (e) {
         e.preventDefault();
+        const $form = $(this);
+        limpiarErrores($form);
 
-        const estilista = {
-            nombre: $("#inpNombre").val(),
-            especialidadId: parseInt($("#selectEspecialidad").val()) || 0,
-            telefono: $("#inpTelefono").val(),
-            email: $("#inpEmail").val(),
-            activo: $("#chkActivo").is(":checked")
-        };
+        const nombre = $("#inpNombre").val().trim();
+        const especialidadId = parseInt($("#selectEspecialidad").val()) || 0;
+        const telefono = $("#inpTelefono").val().trim();
+        const email = $("#inpEmail").val().trim();
 
-        $.ajax({
-            url: urlCompleta,
-            method: "POST",
-            contentType: "application/json",
-            data: JSON.stringify(estilista),
-            success: function () {
-                $("#formEstilista")[0].reset();
-                bootstrap.Offcanvas.getOrCreateInstance($("#offcanvasEstilista")[0]).hide();
-                getEstilistas();
-            },
-            error: function (error) {
-                console.error("Error al crear:", error);
-                alert("Ocurrió un error al guardar el estilista.");
-            }
+        if (!nombre) marcarError($("#inpNombre"), "El nombre es obligatorio.");
+        if (!especialidadId) marcarError($("#selectEspecialidad"), "Selecciona una especialidad.");
+        if (!telefono) marcarError($("#inpTelefono"), "El teléfono es obligatorio.");
+        if (!email) {
+            marcarError($("#inpEmail"), "El email es obligatorio.");
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            marcarError($("#inpEmail"), "El email no tiene un formato válido.");
+        }
+        if (erroresForm.length) { mostrarErrores($form); return; }
+
+        $.get(urlCompleta).done(function (lista) {
+            if (buscarDuplicado(lista, { email }, ["email"], "estilistaId", null))
+                marcarError($("#inpEmail"), "Ya existe un estilista con ese email.");
+            if (buscarDuplicado(lista, { telefono }, ["telefono"], "estilistaId", null))
+                marcarError($("#inpTelefono"), "Ya existe un estilista con ese teléfono.");
+            if (erroresForm.length) { mostrarErrores($form); return; }
+
+            const estilista = {
+                nombre: nombre,
+                especialidadId: especialidadId,
+                telefono: telefono,
+                email: email,
+                activo: $("#chkActivo").is(":checked")
+            };
+
+            $.ajax({
+                url: urlCompleta,
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(estilista),
+                success: function () {
+                    $("#formEstilista")[0].reset();
+                    bootstrap.Offcanvas.getOrCreateInstance($("#offcanvasEstilista")[0]).hide();
+                    getEstilistas();
+                },
+                error: function (error) {
+                    console.error("Error al crear:", error);
+                    alert("Ocurrió un error al guardar el estilista.");
+                }
+            });
         });
     });
 });

@@ -65,36 +65,59 @@ $(document).ready(function () {
 
     $("#formCita").on("submit", function (e) {
         e.preventDefault();
+        limpiarErrores($(this));
 
-        if (!$("#selCliente").val() || !$("#selEstilista").val()) {
-            alert("Selecciona un cliente y un estilista.");
-            return;
-        }
+        const clienteId = Number($("#selCliente").val());
+        const estilistaId = Number($("#selEstilista").val());
+        const fecha = $("#Fecha").val();
+        const hora = $("#Hora").val();
+        let valido = true;
 
-        const cita = {
-            clienteId: Number($("#selCliente").val()),
-            estilistaId: Number($("#selEstilista").val()),
-            fechaCita: $("#Fecha").val(),
-            horaCita: $("#Hora").val(),
-            estado: Number($("#selEstado").val()),
-            notas: $("#txtNotas").val(),
-        };
+        if (!clienteId) { marcarError($("#selCliente"), "Selecciona un cliente."); valido = false; }
+        if (!estilistaId) { marcarError($("#selEstilista"), "Selecciona un estilista."); valido = false; }
+        if (!fecha) { marcarError($(fpFecha.altInput), "La fecha es obligatoria."); valido = false; }
+        if (!hora) { marcarError($("#Hora"), "La hora es obligatoria."); valido = false; }
+        if (!valido) return;
 
-        $.ajax({
-            url: urlCompleta,
-            method: "POST",
-            contentType: "application/json",
-            data: JSON.stringify(cita),
-            success: function () {
-                $("#formCita")[0].reset();
-                fpFecha.clear();
-                fpHora.clear();
-                bootstrap.Offcanvas.getOrCreateInstance($("#offcanvasCita")[0]).hide();
-                getCitas();
-            },
-            error: function (error) {
-                console.error("Error al crear:", error);
+        $.get(urlCompleta).done(function (citas) {
+            const conflicto = (citas || []).find(c =>
+                c.estilistaId === estilistaId &&
+                String(c.fechaCita).slice(0, 10) === fecha &&
+                String(c.horaCita).slice(0, 5) === hora.slice(0, 5) &&
+                c.estado !== 3
+            );
+
+            if (conflicto) {
+                marcarError($("#selEstilista"), "Ese estilista ya tiene una cita en esa fecha y hora.");
+                
+                return;
             }
+
+            const cita = {
+                clienteId: clienteId,
+                estilistaId: estilistaId,
+                fechaCita: fecha,
+                horaCita: hora,
+                estado: Number($("#selEstado").val()),
+                notas: $("#txtNotas").val(),
+            };
+
+            $.ajax({
+                url: urlCompleta,
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(cita),
+                success: function () {
+                    $("#formCita")[0].reset();
+                    fpFecha.clear();
+                    fpHora.clear();
+                    bootstrap.Offcanvas.getOrCreateInstance($("#offcanvasCita")[0]).hide();
+                    getCitas();
+                },
+                error: function (error) {
+                    console.error("Error al crear:", error);
+                }
+            });
         });
     });
 });

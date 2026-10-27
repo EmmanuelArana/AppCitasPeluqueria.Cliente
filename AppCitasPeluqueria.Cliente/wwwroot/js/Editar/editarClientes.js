@@ -6,26 +6,49 @@ $(document).ready(function () {
 
     $("#formCliente").on("submit", function (e) {
         e.preventDefault();
+        const $form = $(this);
+        limpiarErrores($form);
 
-        const cliente = {
-            clienteId: clienteId,
-            nombre: $("#inpNombre").val(),
-            telefono: $("#inpTelefono").val(),
-            email: $("#inpEmail").val(),
-            activo: $("#chkActivo").is(":checked")
-        };
+        const nombre = $("#inpNombre").val().trim();
+        const telefono = $("#inpTelefono").val().trim();
+        const email = $("#inpEmail").val().trim();
 
-        $.ajax({
-            url: `${urlCompleta}/${clienteId}`,
-            method: "PUT",
-            contentType: "application/json",
-            data: JSON.stringify(cliente),
-            success: function () {
-                window.location.href = '/Clientes';
-            },
-            error: function (error) {
-                console.error("Error al actualizar:", error);
-            }
+        if (!nombre) marcarError($("#inpNombre"), "El nombre es obligatorio.");
+        if (!telefono) marcarError($("#inpTelefono"), "El teléfono es obligatorio.");
+        if (!email) {
+            marcarError($("#inpEmail"), "El email es obligatorio.");
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            marcarError($("#inpEmail"), "El email no tiene un formato válido.");
+        }
+        if (erroresForm.length) { mostrarErrores($form); return; }
+
+        $.get(urlCompleta).done(function (lista) {
+            if (buscarDuplicado(lista, { email }, ["email"], "clienteId", clienteId))
+                marcarError($("#inpEmail"), "Ya existe otro cliente con ese email.");
+            if (buscarDuplicado(lista, { telefono }, ["telefono"], "clienteId", clienteId))
+                marcarError($("#inpTelefono"), "Ya existe otro cliente con ese teléfono.");
+            if (erroresForm.length) { mostrarErrores($form); return; }
+
+            const cliente = {
+                clienteId: clienteId,
+                nombre: nombre,
+                telefono: telefono,
+                email: email,
+                activo: $("#chkActivo").is(":checked")
+            };
+
+            $.ajax({
+                url: `${urlCompleta}/${clienteId}`,
+                method: "PUT",
+                contentType: "application/json",
+                data: JSON.stringify(cliente),
+                success: function () {
+                    window.location.href = '/Clientes';
+                },
+                error: function (error) {
+                    console.error("Error al actualizar:", error);
+                }
+            });
         });
     });
 });

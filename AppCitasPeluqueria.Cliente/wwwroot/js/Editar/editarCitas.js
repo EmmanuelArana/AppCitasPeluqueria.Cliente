@@ -36,29 +36,60 @@ $(document).ready(function () {
 
     $("#formCita").on("submit", function (e) {
         e.preventDefault();
+        const $form = $(this);
+        limpiarErrores($form);
 
-        const cita = {
-            citaId: citaId,
-            clienteId: Number($("#selCliente").val()),
-            estilistaId: Number($("#selEstilista").val()),
-            fechaCita: $("#Fecha").val(),
-            horaCita: $("#Hora").val(),
-            notas: $("#txtNotas").val(),
-            estado: Number($("#selEstado").val()),
-            fechaCreacion: fechaCreacion
-        };
+        const clienteId = Number($("#selCliente").val());
+        const estilistaId = Number($("#selEstilista").val());
+        const fecha = $("#Fecha").val();
+        const hora = $("#Hora").val();
+        const estado = Number($("#selEstado").val());
 
-        $.ajax({
-            url: `${urlCompleta}/${citaId}`,
-            method: "PUT",
-            contentType: "application/json",
-            data: JSON.stringify(cita),
-            success: function () {
-                window.location.href = '/Citas';
-            },
-            error: function (error) {
-                console.error("Error al actualizar:", error);
+        if (!clienteId) marcarError($("#selCliente"), "Selecciona un cliente.");
+        if (!estilistaId) marcarError($("#selEstilista"), "Selecciona un estilista.");
+        if (!fecha) marcarError($(pickerFecha.altInput), "La fecha es obligatoria.");
+        if (!hora) marcarError($("#Hora"), "La hora es obligatoria.");
+        if (erroresForm.length) { mostrarErrores($form); return; }
+
+        $.get(urlCompleta).done(function (citas) {
+            const conflicto = (citas || []).find(c =>
+                String(c.citaId) !== String(citaId) &&
+                c.estilistaId === estilistaId &&
+                String(c.fechaCita).slice(0, 10) === fecha &&
+                String(c.horaCita).slice(0, 5) === hora.slice(0, 5) &&
+                c.estado !== 3
+            );
+
+            // Si la cita que se edita queda cancelada, no hay conflicto posible
+            if (conflicto && estado !== 3) {
+                marcarError($("#selEstilista"), "Ese estilista ya tiene una cita en esa fecha y hora.");
+                mostrarErrores($form);
+                return;
             }
+
+            const cita = {
+                citaId: citaId,
+                clienteId: clienteId,
+                estilistaId: estilistaId,
+                fechaCita: fecha,
+                horaCita: hora,
+                notas: $("#txtNotas").val(),
+                estado: estado,
+                fechaCreacion: fechaCreacion
+            };
+
+            $.ajax({
+                url: `${urlCompleta}/${citaId}`,
+                method: "PUT",
+                contentType: "application/json",
+                data: JSON.stringify(cita),
+                success: function () {
+                    window.location.href = '/Citas';
+                },
+                error: function (error) {
+                    console.error("Error al actualizar:", error);
+                }
+            });
         });
     });
 });

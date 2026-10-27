@@ -48,12 +48,12 @@
     </div>
     <div class="offcanvas-body">
         <form id="formEspecialidad" novalidate>
+            <div id="errorForm" class="alert alert-danger d-none"></div>
             <input type="hidden" id="inpId" />
 
             <div class="mb-3">
                 <label for="inpNombre" class="form-label">Nombre</label>
                 <input type="text" id="inpNombre" class="form-control" maxlength="100" required />
-                <div class="invalid-feedback">El nombre es obligatorio.</div>
             </div>
 
             <div class="mb-4">

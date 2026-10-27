@@ -3,27 +3,46 @@
 $(document).ready(function () {
     getEspecialidades();
 
+    //Se hace el post yse valida que no haya duplicados en el nombre de la especialidad
     $("#formEspecialidad").on("submit", function (e) {
         e.preventDefault();
+        limpiarErrores($(this));
 
-        const especialidad = {
-            nombre: $("#inpNombre").val(),
-            activo: $("#chkActivo").is(":checked")
-        };
+        const nombre = $("#inpNombre").val().trim();
 
-        $.ajax({
-            url: urlCompleta,
-            method: "POST",
-            contentType: "application/json",
-            data: JSON.stringify(especialidad),
-            success: function () {
-                $("#formEspecialidad")[0].reset();
-                bootstrap.Offcanvas.getOrCreateInstance($("#offcanvasEspecialidad")[0]).hide();
-                getEspecialidades();
-            },
-            error: function (error) {
-                console.error("Error al crear:", error);
+        if (!nombre) {
+            marcarError($("#inpNombre"), "El campo nombre es obligatorio");
+            mostrarErrores($(this));
+            return;
+        }
+
+        $.get(urlCompleta).done(function (lista) {
+            const dup = buscarDuplicado(lista, { nombre }, ["nombre"], "especialidadId", null);
+            if (dup) {
+                marcarError($("#inpNombre"), "Ya existe una especialidad con ese nombre.");
+                mostrarErrores($("#formEspecialidad"));
+                return;
             }
+
+            const especialidad = {
+                nombre: nombre,
+                activo: $("#chkActivo").is(":checked")
+            };
+
+            $.ajax({
+                url: urlCompleta,
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(especialidad),
+                success: function () {
+                    $("#formEspecialidad")[0].reset();
+                    bootstrap.Offcanvas.getOrCreateInstance($("#offcanvasEspecialidad")[0]).hide();
+                    getEspecialidades();
+                },
+                error: function (error) {
+                    console.error("Error al crear:", error);
+                }
+            });
         });
     });
 });
