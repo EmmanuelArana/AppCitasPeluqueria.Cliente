@@ -130,7 +130,7 @@ function getCitas() {
             const clientes = resClientes[0];
             const estilistas = resEstilistas[0];
 
-            // Diccionarios con TODOS (para mostrar nombres en la tabla de citas)
+            // Diccionarios con todos los nombres para poder mostrar en la tabla
             nombreCliente = {};
             clientes.forEach(c => nombreCliente[c.clienteId] = c.nombre);
 

@@ -22,7 +22,7 @@ function cargarResumen() {
             const estilistas = resEstilistas[0];
             const especialidades = resEspecialidades[0];
 
-            // 1. Estadísticas de Citas (Totales e Históricas)
+            // 1. Estadísticas de Citas 
             const totalCitas = citas.length;
             const pendientesTotales = citas.filter(c => c.estado === 1 || c.pendiente === true).length;
 

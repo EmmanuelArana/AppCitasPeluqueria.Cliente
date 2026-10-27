@@ -5,7 +5,7 @@ const citaId = window.apiSettings.citaId;
 
 let fechaCreacion;
 
-// Sin minDate dado que al editar, la cita puede ser de una fecha pasada
+// Flatpickr para el campo de fecha y hora
 const pickerFecha = flatpickr("#Fecha", {
     locale: "es",
     dateFormat: "Y-m-d",
@@ -60,7 +60,6 @@ $(document).ready(function () {
                 c.estado !== 3
             );
 
-            // Si la cita que se edita queda cancelada, no hay conflicto posible
             if (conflicto && estado !== 3) {
                 marcarError($("#selEstilista"), "Ese estilista ya tiene una cita en esa fecha y hora.");
                 mostrarErrores($form);
@@ -119,7 +118,7 @@ function cargarSelects(cita) {
         const clientes = resClientes[0];
         const estilistas = resEstilistas[0];
 
-        // Activos, más el que ya tiene asignada la cita (aunque esté inactivo)
+        // Activos, más el que ya tiene asignada la cita 
         const clientesVisibles = clientes.filter(c =>
             c.activo === true || c.clienteId === cita.clienteId
         );

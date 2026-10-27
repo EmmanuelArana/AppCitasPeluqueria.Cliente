@@ -63,7 +63,7 @@ $(document).ready(function () {
     });
 });
 
-// Función renombrada lógicamente a getClientes (anteriormente getCitas)
+// Carga la lista de clientes y actualiza la tabla
 function getClientes() {
     $.ajax({
         url: urlCompleta,
