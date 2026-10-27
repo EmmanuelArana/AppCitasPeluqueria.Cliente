@@ -1,0 +1,137 @@
+﻿@{
+    ViewData["Title"] = "Citas";
+}
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
+    <div>
+        <h3 class="h3 mb-0">@ViewData["Title"]</h3>
+        <p class="text-muted mb-0">Agenda, edita y consulta las citas de la peluquería</p>
+    </div>
+    <!-- Botón que activa el Offcanvas para crear una nueva cita -->
+    <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCita" aria-controls="offcanvasCita" id="btnNuevaCita">
+        <i class="bi bi-plus-lg me-1"></i>Nueva cita
+    </button>
+</div>
+
+<div id="alertas"></div>
+
+<!-- Filtros -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row g-2 align-items-end">
+            <div class="col-sm-6 col-md-4 col-lg-3">
+                <label for="filtroFecha" class="form-label mb-1">Filtrar por fecha</label>
+                <input type="text" id="filtroFecha" class="form-control" placeholder="Selecciona una fecha" />
+            </div>
+            <div class="col-auto">
+                <button type="button" id="btnFiltrar" class="btn btn-primary">
+                    <i class="bi bi-funnel me-1"></i>Filtrar
+                </button>
+                <button type="button" id="btnLimpiar" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-lg me-1"></i>Limpiar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Listado ocupando el 100% de la pantalla -->
+<div class="row g-4">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center py-3">
+                <h3 class="h5 card-title mb-0">Listado de @ViewData["Title"]</h3>
+                <span class="badge text-bg-secondary" id="contadorCitas">0</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-body-tertiary">
+                            <tr>                             
+                                <th>Cliente</th>
+                                <th>Estilista</th>
+                                <th>Estado</th>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th class="text-end">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaCitas">
+                            <tr><td colspan="6" class="text-center text-muted py-4">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Offcanvas con el Formulario de Citas -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasCita" aria-labelledby="offcanvasCitaLabel">
+    <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title" id="tituloForm">Nueva cita</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <form id="formCita" novalidate>
+            <input type="hidden" id="citaId" />
+
+            <div class="mb-3">
+                <label for="selCliente" class="form-label">Cliente</label>
+                <select id="selCliente" class="form-select" required></select>
+            </div>
+
+            <div class="mb-3">
+                <label for="selEstilista" class="form-label">Estilista</label>
+                <select id="selEstilista" class="form-select" required></select>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="Fecha" class="form-label">Fecha</label>
+                    <input type="text" id="Fecha" name="Fecha" class="form-control" placeholder="Selecciona la fecha" />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="Hora" class="form-label">Hora</label>
+                    <input type="text" id="Hora" name="Hora" class="form-control" placeholder="Selecciona la hora" />
+                </div>
+            </div>
+
+
+            <div class="mb-3">
+                <label for="selEstado" class="form-label">Estado</label>
+                <select id="selEstado" class="form-select" required></select>
+            </div>
+
+            <div class="mb-4">
+                <label for="txtNotas" class="form-label">Notas</label>
+                <textarea id="txtNotas" class="form-control" rows="3" maxlength="500"></textarea>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary flex-grow-1">
+                    <i class="bi bi-check-lg me-1"></i>Guardar
+                </button>
+                <button type="button" id="btnCancelar" class="btn btn-outline-secondary" data-bs-dismiss="offcanvas">
+                    Cancelar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+
+@section Scripts {
+    <script>
+        window.apiSettings = {
+            baseUrl: '@Configuration["ApiSettings:BaseUrl"]',
+            endpointCita: '@Configuration["ApiSettings:EndpointCita"]',
+            endpointCliente: '@Configuration["ApiSettings:EndpointCliente"]',
+            endpointEstilista: '@Configuration["ApiSettings:EndpointEstilista"]'
+        };
+    </script>
+
+    <script src="~/js/citas.js" asp-append-version="true"></script>
+}

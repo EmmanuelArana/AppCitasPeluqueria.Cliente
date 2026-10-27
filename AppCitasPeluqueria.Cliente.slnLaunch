@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "API.CitasPeluqueria\\API.CitasPeluqueria.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "AppCitasPeluqueria.Cliente\\PeluqueriaFrontEnd.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

@@ -1,0 +1,6 @@
+@API.CitasPeluqueria_HostAddress = http://localhost:5239
+
+GET {{API.CitasPeluqueria_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

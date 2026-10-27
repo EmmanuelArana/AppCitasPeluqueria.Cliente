@@ -1,0 +1,17 @@
+﻿using Entities.CitasPeluqueria;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Repository.CitasPeluqueria.Interfaces
+{
+    public interface IEstilistumRepository
+    {
+        Task<List<Estilistum>> Listar();
+        Task<Estilistum?> ObtenerPorId(int id);
+        Task<Estilistum> Crear(Estilistum entidad);
+        Task Actualizar(Estilistum entidad);
+        Task Eliminar(Estilistum entidad);
+        Task<bool> ExisteEspecialidad(int especialidadId);
+    }
+}

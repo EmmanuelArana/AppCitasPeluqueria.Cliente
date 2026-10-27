@@ -1,0 +1,149 @@
+﻿<!DOCTYPE html>
+<html lang="es" data-bs-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@ViewData["Title"] - Peluquería</title>
+  <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+  <link rel="stylesheet" href="~/css/layout.css" />
+</head>
+<body>
+  <div class="admin-app">
+    <div class="admin-wrapper" id="admin-wrapper">
+
+      <!-- Header -->
+      <header class="admin-header">
+        <nav class="navbar navbar-expand-lg bg-body border-bottom">
+          <div class="container-fluid">
+
+            <!-- Botón de Menu -->
+            <button class="hamburger-menu" type="button" data-sidebar-toggle aria-label="Mostrar u ocultar menú">
+                <i class="bi bi-list"></i>
+            </button>
+
+            <!-- Logo / Marca -->
+            <a class="navbar-brand d-flex align-items-center" asp-controller="Home" asp-action="Index">
+              <i class="bi bi-scissors text-primary fs-3 me-2"></i>
+              <span class="h4 mb-0 fw-bold text-primary-emphasis">Peluquería</span>
+            </a>
+
+            <!-- Iconos de la derecha -->
+            <div class="navbar-nav flex-row">
+
+              <!-- Cambio de tema -->
+              <button class="btn btn-outline-secondary me-2" type="button" id="themeToggle" title="Cambiar tema">
+                <i class="bi bi-sun-fill" id="themeIcon"></i>
+              </button>
+
+              <!-- Pantalla completa -->
+              <button class="btn btn-outline-secondary me-2 d-none d-lg-inline-block" type="button"
+                      id="fullscreenToggle" title="Pantalla completa">
+                <i class="bi bi-arrows-fullscreen"></i>
+              </button>
+
+            </div>
+          </div>
+        </nav>
+      </header>
+
+      <!-- Sidebar -->
+      <aside class="admin-sidebar" id="admin-sidebar">
+        <div class="sidebar-content">
+          <nav class="sidebar-nav">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link" asp-controller="Home" asp-action="Index">
+                  <i class="bi bi-speedometer2"></i>
+                  <span>Inicio</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" asp-controller="Citas" asp-action="Index">
+                  <i class="bi bi-calendar-event"></i>
+                  <span>Citas</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" asp-controller="Clientes" asp-action="Index">
+                  <i class="bi bi-people"></i>
+                  <span>Clientes</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" asp-controller="Estilistas" asp-action="Index">
+                  <i class="bi bi-person-badge"></i>
+                  <span>Estilistas</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" asp-controller="Especialidades" asp-action="Index">
+                  <i class="bi bi-tags"></i>
+                  <span>Especialidades</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </aside>
+
+      <!-- Fondo oscuro en móvil -->
+      <div class="sidebar-backdrop" aria-hidden="true"></div>
+
+      <!-- Contenido principal -->
+      <main class="admin-main">
+        <div class="admin-content">
+          @RenderBody()
+        </div>
+
+        <!-- Footer -->
+        <footer class="admin-footer">
+          <div class="container-fluid">
+            <p class="mb-0 text-muted text-center small">
+              &copy; 2026 Peluquería &bull; Sistema de gestión de citas
+            </p>
+          </div>
+        </footer>
+      </main>
+
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+  <script src="~/lib/jquery/dist/jquery.min.js"></script>
+  <script src="~/js/layout.js"></script>
+
+  <script>
+    // Marcar el link activo según la URL
+    document.querySelectorAll('.sidebar-nav .nav-link').forEach(a => {
+      const ruta = a.getAttribute('href');
+      const actual = location.pathname;
+      if (ruta === actual || (ruta !== '/' && actual.startsWith(ruta))) a.classList.add('active');
+    });
+
+    // Cambio de tema (claro / oscuro)
+    const html = document.documentElement;
+    const icono = document.getElementById('themeIcon');
+    const aplicarTema = t => {
+      html.setAttribute('data-bs-theme', t);
+      icono.className = t === 'dark' ? 'bi bi-moon-fill' : 'bi bi-sun-fill';
+      try { localStorage.setItem('tema', t); } catch {}
+    };
+    try { aplicarTema(localStorage.getItem('tema') || 'light'); } catch {}
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      aplicarTema(html.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark');
+    });
+
+    // Pantalla completa
+    document.getElementById('fullscreenToggle').addEventListener('click', () => {
+      document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+    });
+  </script>
+
+  @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
