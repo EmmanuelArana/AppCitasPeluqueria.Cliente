@@ -49,6 +49,7 @@ $(document).ready(function () {
                 method: "POST",
                 contentType: "application/json",
                 data: JSON.stringify(cliente),
+                beforeSend: function () { limpiarErrores($("#formCliente")); },
                 success: function () {
                     $("#formCliente")[0].reset();
                     bootstrap.Offcanvas.getOrCreateInstance($("#offcanvasCliente")[0]).hide();
@@ -56,7 +57,7 @@ $(document).ready(function () {
                 },
                 error: function (error) {
                     console.error("Error al crear:", error);
-                    alert("Ocurrió un error al guardar el cliente.");
+                    mostrarErrorAPI(error);
                 }
             });
         });
@@ -116,13 +117,34 @@ function eliminarCliente(id) {
         url: urlCompleta + "/" + id,
         type: "DELETE",
         success: function () {
-            console.log("Cliente eliminado correctamente.");
+            limpiarErrorServer();
             getClientes();
         },
         error: function (error) {
             const msg = error.responseJSON?.mensaje || "Error al eliminar.";
-            alert(msg);
             console.error("Error al eliminar el cliente:", msg);
+            mostrarErrorAPI(error);
         }
     });
+}
+
+//Mostrar errores que envia el servidor via API
+function mostrarErrorAPI(error) {
+    const r = error.responseJSON;
+    let mensajes = [];
+
+    if (error.status === 0) {                                 // Error de red
+        mensajes = ['No se pudo conectar con el servidor.'];
+    } else if (r?.errors) {                                   // validaciones de modelo
+        mensajes = Object.values(r.errors).flat();
+    } else if (r?.mensaje) {                                  // Reglas de negocio de la api
+        mensajes = [r.mensaje];
+    } else {
+        mensajes = ['Ocurrió un error inesperado.'];
+    }
+
+    $('#errorServer')
+        .empty()
+        .append(mensajes.map(m => $('<div>').text(m)))
+        .removeClass('d-none');
 }

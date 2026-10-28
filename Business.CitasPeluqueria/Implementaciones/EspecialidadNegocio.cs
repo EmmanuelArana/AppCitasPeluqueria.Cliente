@@ -75,7 +75,7 @@ public class EspecialidadNegocio : IEspecialidadNegocio
         return true;
     }
 
- 
+
     public async Task<bool> Eliminar(int id)
     {
         var especialidad = await _repositorio.ObtenerPorId(id);
@@ -84,10 +84,9 @@ public class EspecialidadNegocio : IEspecialidadNegocio
             return false;
 
         if (await _repositorio.TieneEstilistasActivos(id))
-            throw new ArgumentException("No se puede eliminar: hay estilistas activos con esta especialidad.");
+            throw new InvalidOperationException("No se puede eliminar la especialidad porque tiene estilistas asociados.");
 
-        especialidad.Activo = false;
-        await _repositorio.Actualizar(especialidad);
+        await _repositorio.Eliminar(especialidad); // hard delete
 
         return true;
     }

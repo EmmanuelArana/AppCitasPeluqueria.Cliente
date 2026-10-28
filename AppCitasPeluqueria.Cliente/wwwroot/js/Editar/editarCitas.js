@@ -82,11 +82,13 @@ $(document).ready(function () {
                 method: "PUT",
                 contentType: "application/json",
                 data: JSON.stringify(cita),
+                beforeSend: function () { limpiarErrores($("#formEstilista")); },
                 success: function () {
                     window.location.href = '/Citas';
                 },
                 error: function (error) {
                     console.error("Error al actualizar:", error);
+                    mostrarErrorAPI(error);
                 }
             });
         });
@@ -141,4 +143,25 @@ function cargarSelects(cita) {
         $("#selCliente").val(cita.clienteId);
         $("#selEstilista").val(cita.estilistaId);
     });
+}
+
+// Función para mostrar errores de la API en el formulario
+function mostrarErrorAPI(error) {
+    const r = error.responseJSON;
+    let mensajes = [];
+
+    if (error.status === 0) {                                 // Error de red
+        mensajes = ['No se pudo conectar con el servidor.'];
+    } else if (r?.errors) {                                   // validaciones de modelo
+        mensajes = Object.values(r.errors).flat();
+    } else if (r?.mensaje) {                                  // Reglas de negocio de la api
+        mensajes = [r.mensaje];
+    } else {
+        mensajes = ['Ocurrió un error inesperado.'];
+    }
+
+    $('#errorForm')
+        .empty()
+        .append(mensajes.map(m => $('<div>').text(m)))
+        .removeClass('d-none');
 }

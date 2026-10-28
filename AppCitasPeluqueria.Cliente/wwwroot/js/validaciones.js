@@ -11,6 +11,14 @@ function limpiarErrores($form) {
     erroresForm = [];
     $form.find(".is-invalid").removeClass("is-invalid");
     $form.find("#errorForm").addClass("d-none").empty();
+
+}
+
+function limpiarErrorServer() {
+    $("#errorServer")
+        .addClass("d-none")
+        .removeClass("alert alert-danger")
+        .empty();
 }
 
 function mostrarErrores($form) {

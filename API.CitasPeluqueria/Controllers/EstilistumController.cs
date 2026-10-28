@@ -57,11 +57,22 @@ namespace API.CitasPeluqueria.Controllers
             }
         }
 
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Eliminar(int id)
         {
-            var ok = await _negocio.Eliminar(id);
-            return ok ? NoContent() : NotFound();
+            try
+            {
+                var eliminado = await _negocio.Eliminar(id);
+
+                if (!eliminado)
+                    return NotFound(new { mensaje = "El estilista no existe." });
+
+                return NoContent();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { mensaje = ex.Message });
+            }
         }
     }
 }

@@ -107,6 +107,7 @@ $(document).ready(function () {
                 method: "POST",
                 contentType: "application/json",
                 data: JSON.stringify(cita),
+                beforeSend: function () { limpiarErrores($("#formCita")); },
                 success: function () {
                     $("#formCita")[0].reset();
                     fpFecha.clear();
@@ -116,6 +117,7 @@ $(document).ready(function () {
                 },
                 error: function (error) {
                     console.error("Error al crear:", error);
+                    mostrarErrorAPI(error);
                 }
             });
         });
@@ -215,13 +217,33 @@ function eliminarCita(id) {
         url: urlCompleta + "/" + id,
         type: "DELETE",
         success: function () {
-            console.log("Cita eliminada correctamente.");
+            limpiarErrorServer();
             getCitas();
         },
         error: function (error) {
             const msg = error.responseJSON?.mensaje || "Error al eliminar.";
-            alert(msg);
             console.error("Error al eliminar la cita:", msg);
+            mostrarErrorAPI(error);
         }
     });
+}
+//Muestra los errores de la API en el formulario
+function mostrarErrorAPI(error) {
+    const r = error.responseJSON;
+    let mensajes = [];
+
+    if (error.status === 0) {                                 // Error de red
+        mensajes = ['No se pudo conectar con el servidor.'];
+    } else if (r?.errors) {                                   // validaciones de modelo
+        mensajes = Object.values(r.errors).flat();
+    } else if (r?.mensaje) {                                  // Reglas de negocio de la api
+        mensajes = [r.mensaje];
+    } else {
+        mensajes = ['Ocurrió un error inesperado.'];
+    }
+
+    $('#errorServer')
+        .empty()
+        .append(mensajes.map(m => $('<div>').text(m)))
+        .removeClass('d-none');
 }

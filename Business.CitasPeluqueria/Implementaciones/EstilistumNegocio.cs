@@ -76,8 +76,10 @@ namespace Business.CitasPeluqueria.Implementaciones
             if (estilista == null)
                 return false;
 
-            estilista.Activo = false;
-            await _repositorio.Actualizar(estilista);
+            if (await _repositorio.TieneCitas(id))
+                throw new ArgumentException("No se puede eliminar el estilista porque tiene citas registradas.");
+
+            await _repositorio.Eliminar(estilista); // hard delete
 
             return true;
         }

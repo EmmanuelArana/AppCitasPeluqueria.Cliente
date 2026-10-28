@@ -48,7 +48,12 @@ namespace Repository.CitasPeluqueria.Implementaciones
         public async Task<bool> TieneEstilistasActivos(int especialidadId)
         {
             return await _bd.Estilista
-                .AnyAsync(e => e.EspecialidadId == especialidadId && e.Activo);
+                .AnyAsync(e => e.EspecialidadId == especialidadId);
+        }
+        public async Task Eliminar(Especialidad entidad)
+        {
+            _bd.Especialidad.Remove(entidad);
+            await _bd.SaveChangesAsync();
         }
     }
 }

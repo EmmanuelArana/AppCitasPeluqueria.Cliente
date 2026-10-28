@@ -1,5 +1,5 @@
 ﻿const urlCompleta = window.apiSettings.baseUrl + window.apiSettings.endpointEstilista;
-const urlEspecialidades = window.apiSettings.baseUrl + window.apiSettings.endpointEspecialidad;
+const urlEspecialidades = window.apiSettings.baseUrl + window.apiSettings.endpointEspecialidad
 
 $(document).ready(function () {
     // Cargar datos iniciales y llenar el select de especialidades
@@ -45,6 +45,7 @@ $(document).ready(function () {
                 url: urlCompleta,
                 method: "POST",
                 contentType: "application/json",
+                beforeSend: function () { limpiarErrores($("#formEstilista")); },
                 data: JSON.stringify(estilista),
                 success: function () {
                     $("#formEstilista")[0].reset();
@@ -53,7 +54,7 @@ $(document).ready(function () {
                 },
                 error: function (error) {
                     console.error("Error al crear:", error);
-                    alert("Ocurrió un error al guardar el estilista.");
+                    mostrarErrorAPI(error);
                 }
             });
         });
@@ -136,12 +137,34 @@ function eliminarEstilista(id) {
         url: urlCompleta + "/" + id,
         type: "DELETE",
         success: function () {
+            limpiarErrorServer();
             getEstilistas();
         },
         error: function (error) {
             const msg = error.responseJSON?.mensaje || "Error al eliminar.";
-            alert(msg);
             console.error("Error al eliminar el estilista:", msg);
+            mostrarErrorAPI(error);
         }
     });
+}
+
+//Mostrar errores que envia el servidor via API
+function mostrarErrorAPI(error) {
+    const r = error.responseJSON;
+    let mensajes = [];
+
+    if (error.status === 0) {                                 // Error de red
+        mensajes = ['No se pudo conectar con el servidor.'];
+    } else if (r?.errors) {                                   // validaciones de modelo
+        mensajes = Object.values(r.errors).flat();
+    } else if (r?.mensaje) {                                  // Reglas de negocio de la api
+        mensajes = [r.mensaje];
+    } else {
+        mensajes = ['Ocurrió un error inesperado.'];
+    }
+
+    $('#errorServer')
+        .empty()
+        .append(mensajes.map(m => $('<div>').text(m))) 
+        .removeClass('d-none');
 }

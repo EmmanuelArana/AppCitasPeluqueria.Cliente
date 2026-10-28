@@ -46,6 +46,11 @@ namespace Repository.CitasPeluqueria.Implementaciones
             await _bd.SaveChangesAsync();
         }
 
+        public async Task<bool> TieneCitas(int estilistaId)
+        {
+            return await _bd.Cita.AnyAsync(c => c.EstilistaId == estilistaId);
+        }
+
         public async Task Eliminar(Estilistum entidad)
         {
             _bd.Estilista.Remove(entidad);

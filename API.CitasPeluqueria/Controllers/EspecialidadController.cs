@@ -53,19 +53,5 @@ namespace API.CitasPeluqueria.Controllers
                 return BadRequest(new { mensaje = ex.Message });
             }
         }
-
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Eliminar(int id)
-        {
-            try
-            {
-                var ok = await _negocio.Eliminar(id);
-                return ok ? NoContent() : NotFound();
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new { mensaje = ex.Message });
-            }
-        }
     }
 }

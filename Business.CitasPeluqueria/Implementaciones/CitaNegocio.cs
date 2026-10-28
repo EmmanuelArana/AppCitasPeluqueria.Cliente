@@ -41,7 +41,6 @@ namespace Business.CitasPeluqueria.Implementaciones
                 HoraCita = datos.HoraCita!.Value,
                 Notas = datos.Notas,
                 Estado = datos.Estado,
-                FechaCreacion = DateTime.UtcNow
             };
 
             await _repositorio.Crear(cita);

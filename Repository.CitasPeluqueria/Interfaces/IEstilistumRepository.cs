@@ -11,6 +11,7 @@ namespace Repository.CitasPeluqueria.Interfaces
         Task<Estilistum?> ObtenerPorId(int id);
         Task<Estilistum> Crear(Estilistum entidad);
         Task Actualizar(Estilistum entidad);
+        Task<bool> TieneCitas(int estilistaId);
         Task Eliminar(Estilistum entidad);
         Task<bool> ExisteEspecialidad(int especialidadId);
     }

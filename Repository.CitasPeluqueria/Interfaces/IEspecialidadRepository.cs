@@ -13,5 +13,6 @@ namespace Repository.CitasPeluqueria.Interfaces
         Task Actualizar(Especialidad entidad);
         Task<bool> ExisteNombre(string nombre, int? excluirId = null);
         Task<bool> TieneEstilistasActivos(int especialidadId);
+        Task Eliminar(Especialidad entidad);
     }
 }
