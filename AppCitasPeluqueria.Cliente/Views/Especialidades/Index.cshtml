@@ -21,7 +21,7 @@
         <h3 class="h5 card-title mb-0">Listado de @ViewData["Title"]</h3>
         <span class="badge text-bg-secondary" id="contadorEspecialidades">0</span>
     </div>
-    <div id="errorServer" class="alert alert-danger d-none"></div>
+    <div id="errorForm" class="alert alert-danger d-none"></div>
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
@@ -68,7 +68,7 @@
                 <button type="submit" class="btn btn-primary flex-grow-1" id="btnGuardar">
                     <i class="bi bi-check-lg me-1"></i>Guardar
                 </button>
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="offcanvas">
+                <button type="button" id="btnFormCancelar" class="btn btn-outline-secondary" data-bs-dismiss="offcanvas">
                     Cancelar
                 </button>
             </div>

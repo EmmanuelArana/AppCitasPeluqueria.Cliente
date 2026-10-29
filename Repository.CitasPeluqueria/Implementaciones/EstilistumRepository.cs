@@ -39,6 +39,16 @@ namespace Repository.CitasPeluqueria.Implementaciones
             await _bd.SaveChangesAsync();
             return entidad;
         }
+        public async Task<bool> TieneCitasPendientes(int estilistaId)
+        {
+            var hoy = DateOnly.FromDateTime(DateTime.Now);  
+
+            return await _bd.Cita.AnyAsync(c =>
+                c.EstilistaId == estilistaId
+                && c.FechaCita >= hoy
+                && c.Estado != 3
+                && c.Estado != 2);
+        }
 
         public async Task Actualizar(Estilistum entidad)
         {

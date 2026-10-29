@@ -1,24 +1,26 @@
 ﻿let erroresForm = [];
+let timerError;
+
 function marcarError($campo, mensaje) {
+    clearTimeout(timerError);
+
+    const $form = $campo.closest("form");
+
     $campo.addClass("is-invalid");
     erroresForm.push(mensaje);
-    $campo.closest("form").find("#errorForm")
+
+    $form.find("#errorForm")
         .removeClass("d-none")
         .html(erroresForm.map(m => `<div>${m}</div>`).join(""));
+
+    timerError = setTimeout(() => limpiarErrores($form), 4000);
 }
 
 function limpiarErrores($form) {
+    clearTimeout(timerError);
     erroresForm = [];
     $form.find(".is-invalid").removeClass("is-invalid");
     $form.find("#errorForm").addClass("d-none").empty();
-
-}
-
-function limpiarErrorServer() {
-    $("#errorServer")
-        .addClass("d-none")
-        .removeClass("alert alert-danger")
-        .empty();
 }
 
 function mostrarErrores($form) {

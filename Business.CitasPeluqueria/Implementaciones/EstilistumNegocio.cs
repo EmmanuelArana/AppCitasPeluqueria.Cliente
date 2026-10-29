@@ -58,6 +58,13 @@ namespace Business.CitasPeluqueria.Implementaciones
 
             await Validar(datos);
 
+            // Solo se valida cuando pasa de activo a inactivo
+            if (estilista.Activo && !datos.Activo
+                && await _repositorio.TieneCitasPendientes(id))
+            {
+                throw new ArgumentException("No se puede desactivar al estilista porque tiene citas pendientes.");
+            }
+
             estilista.Nombre = datos.Nombre.Trim();
             estilista.EspecialidadId = datos.EspecialidadId;
             estilista.Telefono = datos.Telefono;

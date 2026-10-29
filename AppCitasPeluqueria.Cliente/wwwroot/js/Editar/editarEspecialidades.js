@@ -61,27 +61,7 @@ function getEspecialidadById(id) {
         },
         error: function (error) {
             console.error("Error al obtener la especialidad:", error);
+            mostrarErrorAPI(error);
         }
     });
-}
-
-// Función para mostrar errores de la API en el formulario
-function mostrarErrorAPI(error) {
-    const r = error.responseJSON;
-    let mensajes = [];
-
-    if (error.status === 0) {                                 // Error de red
-        mensajes = ['No se pudo conectar con el servidor.'];
-    } else if (r?.errors) {                                   // validaciones de modelo
-        mensajes = Object.values(r.errors).flat();
-    } else if (r?.mensaje) {                                  // Reglas de negocio de la api
-        mensajes = [r.mensaje];
-    } else {
-        mensajes = ['Ocurrió un error inesperado.'];
-    }
-
-    $('#errorForm')
-        .empty()
-        .append(mensajes.map(m => $('<div>').text(m)))
-        .removeClass('d-none');
 }

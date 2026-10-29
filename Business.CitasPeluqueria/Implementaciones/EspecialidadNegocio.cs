@@ -86,7 +86,7 @@ public class EspecialidadNegocio : IEspecialidadNegocio
         if (await _repositorio.TieneEstilistasActivos(id))
             throw new InvalidOperationException("No se puede eliminar la especialidad porque tiene estilistas asociados.");
 
-        await _repositorio.Eliminar(especialidad); // hard delete
+        await _repositorio.Eliminar(especialidad); 
 
         return true;
     }
